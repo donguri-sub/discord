@@ -24,7 +24,7 @@ let model;
 try {
   const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
   // モデル名を実在するものに修正
-  model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" }); 
+  model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); 
   console.log("Gemini model initialized.");
 } catch (e) {
   console.error("Gemini Init Error:", e);
