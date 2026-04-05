@@ -27,7 +27,7 @@ if (!DISCORD_TOKEN || !GEMINI_API_KEY) {
 // --- 3. Gemini AI の初期化 ---
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 // 使用するモデルを指定 (gemini-pro はテキスト生成に最適)
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
+const model = genAI.getGenerativeModel({ model: "Gemini 2.5 Flash"});
 
 
 // --- 4. Discord Bot の初期化 ---
