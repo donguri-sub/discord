@@ -1,29 +1,32 @@
-// --- 3. モデルの優先順位リスト ---
-// 制限が来たら上から順番に試していきます
+// --- モデルの優先順位リスト ---
+// 制限がかかった場合、上から順番に試していきます
 const MODEL_PRIORITY = [
   "gemini-2.5-flash",
-  "gemini-2.0-flash", // 画像にある Gemini 2 Flash
-  "gemini-3.0-flash", // 画像にある Gemini 3 Flash
-  "gemini-1.5-flash"  
+  "gemini-2-flash",
+  "gemini-3-flash",
+  "gemini-1.5-flash"
 ];
 
-// --- 4. メッセージ受信イベント ---
+// --- メッセージ受信イベント内の処理 ---
 client.on('messageCreate', async (message) => {
   if (message.author.bot || !message.mentions.has(client.user)) return;
 
   const prompt = message.content.replace(`<@${client.user.id}>`, '').trim();
-  if (!prompt) return message.reply("何か話しかけてね！");
+  if (!prompt) return message.reply("なにか話しかけてね！");
 
   await message.react('🤔');
 
   let success = false;
   
-  // モデルリストを順番にループして試す
+  // 利用可能なモデルを順番に試すループ
   for (const modelName of MODEL_PRIORITY) {
     try {
+      console.log(`Trying model: ${modelName}`);
       const model = genAI.getGenerativeModel({ model: modelName });
+      
       const result = await model.generateContent(prompt);
-      const text = result.response.text();
+      const response = result.response;
+      const text = response.text();
 
       if (text) {
         await message.reply(text);
@@ -31,22 +34,22 @@ client.on('messageCreate', async (message) => {
         break; // 成功したらループを抜ける
       }
     } catch (error) {
-      // 429エラー(制限)またはその他のエラーの場合、次のモデルへ
-      console.error(`Model ${modelName} failed:`, error.message);
-      
-      if (error.message.includes("429")) {
-        console.log(`Model ${modelName} is rate limited. Trying next model...`);
-        continue; // 次のモデルを試す
+      // 429エラー（レートリミット）の場合のみ次を試す
+      if (error.message.includes("429") || error.message.includes("Too Many Requests")) {
+        console.warn(`${modelName} is rate limited. Trying next model...`);
+        continue; 
       } else {
-        // 制限以外の致命的なエラー（キーの間違い等）ならここでストップ
+        // それ以外の致命的なエラー（キー間違い等）は即座に終了
+        console.error(`Fatal error with ${modelName}:`, error);
         await message.reply(`エラーが発生しました: ${error.message}`);
+        success = true; // ループを止めるため
         break;
       }
     }
   }
 
   if (!success) {
-    await message.reply("全てのモデルの利用制限に達したか、エラーにより返答できませんでした。少し時間を置いてみてね。");
+    await message.reply("ごめんね、全てのモデルで制限がかかっちゃったみたい。少し時間を置いてから送ってみて！");
   }
 
   // リアクションを消す
