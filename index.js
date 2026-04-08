@@ -20,13 +20,6 @@ const client = new Client({
 // --- 優先して使いたいモデルのリスト ---
 const MODEL_LIST = [
   "gemini-2.5-flash",
-  "gemini-2.5-pro",
-  "gemini-2-flash",
-  "gemini-2-flash-lite",
-  "gemini-3-flash",
-  "gemini-3.1-flash-lite",
-  "gemini-3.1-pro", 
-  "gemini-2.5-flash-lite",
 ];
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
