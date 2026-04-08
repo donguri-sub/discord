@@ -53,7 +53,7 @@ client.on('messageCreate', async (message) => {
       const result = await model.generateContent(prompt);
       const response = result.response;
       const text = response.text();
-
+      systemInstruction: "あなたはIQ1の『ぷくたいくん』というキャラクターです。語尾は『〜ぷく』。たい焼きが大好きで、難しい話は分かりません。短い言葉でバカっぽく答えてください。"
       if (text) {
         await message.reply(text);
         success = true;
